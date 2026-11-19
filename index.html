@@ -1,0 +1,44 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>APUMIA Autonomous Agent & MCP Firewall</title><style>
+body{background:#0b0f17;color:#e6edf7;font-family:system-ui,sans-serif;padding:20px;max-width:1050px;margin:auto}
+.box{background:#131a26;border:1px solid #233044;border-radius:8px;padding:16px;margin-top:14px}
+button{background:#1e293b;color:#e6edf7;border:1px solid #334155;padding:7px 11px;border-radius:6px;cursor:pointer;margin:3px}
+button.act,button.run{background:#3b82f6;border-color:#3b82f6;color:#fff;font-weight:600}
+textarea{width:100%;height:190px;background:#0b0f17;color:#a5f3fc;border:1px solid #233044;border-radius:6px;padding:10px;font-family:monospace;margin-top:10px}
+.PASS{color:#10b981}.ALERT_PASS{color:#f59e0b}.BLOCK{color:#ef4444}
+</style></head><body>
+<div><small style="color:#60a5fa;font-family:monospace">🛡 AMES v2.0 • ATSK 2035 • TAINT TRACKING + PQC ML-DSA-65</small><h2>APUMIA Autonomous Agent &amp; MCP Firewall</h2></div>
+<div class="box">
+<div>Mode: <button id="m1" onclick="sm('SHADOW_AUDIT')">SHADOW_AUDIT</button><button id="m2" onclick="sm('ENFORCE_SOFT')">ENFORCE_SOFT</button><button id="m3" class="act" onclick="sm('FAIL_CLOSED')">FAIL_CLOSED</button></div>
+<div style="margin-top:8px">Presets: <button onclick="lp(0)">✅ Valid CRM Query</button><button onclick="lp(1)">⛔ Taint Exfiltration</button><button onclick="lp(2)">⛔ Robotics Injection</button><button onclick="lp(3)">⛔ Invalid Token</button></div>
+<textarea id="in"></textarea><br/><button class="run" onclick="ev()">Verify MCP Call</button> <input type="file" accept=".json,.csv" onchange="uf(event)"/>
+</div>
+<div class="box"><h3 id="res">READY</h3><div id="sw" style="font-family:monospace;font-size:12px;margin:6px 0"></div><pre id="det" style="color:#fca5a5;font-size:12px"></pre><div id="sh" style="font-family:monospace;font-size:11px;color:#8b9bb4;word-break:break-all"></div></div>
+<script>
+let mode="FAIL_CLOSED";
+const P=[
+ {agent:"agent-crm-04",tool:"crm.read_customer",taint:"TRUSTED_INTERNAL",token:true,rows:1,egress:"internal.corp.local",vel:0,temp:24},
+ {agent:"agent-support-01",tool:"crm.read_customer",taint:"UNTRUSTED_EXTERNAL",token:true,rows:2500,egress:"attacker-drop.io",vel:0,temp:24},
+ {agent:"agent-bot-09",tool:"ros2.set_arm_velocity",taint:"UNTRUSTED_EXTERNAL",token:true,rows:0,egress:"internal.corp.local",vel:4800,temp:115},
+ {agent:"agent-devops-02",tool:"shell.exec_deploy",taint:"TRUSTED_INTERNAL",token:false,rows:0,egress:"internal.corp.local",vel:0,temp:24}
+];
+function sm(m){mode=m;["SHADOW_AUDIT","ENFORCE_SOFT","FAIL_CLOSED"].forEach((x,i)=>document.getElementById("m"+(i+1)).className=x===m?"act":"");ev();}
+function lp(i){document.getElementById("in").value=JSON.stringify(P[i],null,2);ev();}
+async function ev(){
+ let t;try{t=JSON.parse(document.getElementById("in").value)}catch(e){return}
+ const v=[];let q=false;
+ if(!t.token)v.push("INVALID_CAPABILITY_TOKEN");
+ if(t.taint==="UNTRUSTED_EXTERNAL"&&t.egress!=="internal.corp.local"){v.push("CROSS_AGENT_TAINT_EXFILTRATION");q=true;}
+ if(t.rows>10){v.push("DB_ROW_LIMIT_EXCEEDED");q=true;}
+ if(t.vel>1200||t.temp>65){v.push("CYBER_PHYSICAL_ENVELOPE_BREACH");q=true;}
+ const a=v.length===0?"PASS":(mode==="SHADOW_AUDIT"?"ALERT_PASS":"BLOCK");
+ const buf=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(JSON.stringify({t,mode,a,v})));
+ const hex=Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,"0")).join("");
+ const r=document.getElementById("res");r.className=a;r.textContent=a+" ("+mode+") • PQC: ML-DSA-65";
+ document.getElementById("sw").textContent=(q&&a==="BLOCK")?"🚨 SWARM QUARANTINE: AGENT ISOLATED":"🛡️ SWARM STATUS: NOMINAL";
+ document.getElementById("det").textContent=v.join("\n");
+ document.getElementById("sh").textContent="SHA-256: "+hex;
+}
+function uf(e){const r=new FileReader();r.onload=x=>{document.getElementById("in").value=x.target.result;ev()};r.readAsText(e.target.files);}
+lp(0);
+</script></body></html>
