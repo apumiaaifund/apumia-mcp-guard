@@ -11,4 +11,4 @@ Live Browser Sandbox: **[https://github.io](https://github.io)**
 
 ## Get the Commercial MCP Firewall Kit ($149)
 Includes full Python MCP guard kernel (`atsk_guard.py`, `mcp_tool_proxy.py`), standalone interactive sandbox, and commercial license.
-Contact **apumiaaifund@gmail.com** or visit **https://github.io**.
+Get instant access via Stripe, Apple Pay, or PayPal: **[Buy APUMIA MCP Security Firewall Kit ($149) ↗](https://app.lava.top/products/65b983c6-48ee-4b7b-b9c8-659517cd4c43)**
