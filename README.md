@@ -1,3 +1,5 @@
+[![M8ven Score](https://m8ven.aiapumia-mcp-guard)](https://m8ven.aiapumia-mcp-guard?s=readme)
+
 # APUMIA MCP Security & Tool-Call Firewall
 
 **Deterministic Zero-GPU runtime firewall protecting Model Context Protocol (MCP) agents against indirect prompt injections, unauthorized tool calls, and credential egress.**
