@@ -1,4 +1,4 @@
-[![M8ven Score](https://m8ven.aiapumia-mcp-guard)](https://m8ven.aiapumia-mcp-guard?s=readme)
+[![M8ven Score](https://m8ven.ai/badge/mcp/apumiaaifund/apumia-mcp-guard)](https://m8ven.ai/mcp/apumiaaifund/apumia-mcp-guard?s=readme)
 
 # APUMIA MCP Security & Tool-Call Firewall
 
